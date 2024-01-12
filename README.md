@@ -64,7 +64,7 @@ sudo docker run -d --name "cloudconnector" -p 8443:8443/tcp "andreasferdinand/cl
     To log on use the following default credentials:
 
     * Username: `Administrator`
-    * Password: `Manage`
+    * Password: `manage`
 
 ## Some additional things
 
