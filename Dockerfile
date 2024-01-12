@@ -14,8 +14,6 @@ ARG CC_DOWNLOAD_FILE
 LABEL build_version="1.0"
 LABEL maintainer="AndreasFerdinand"
 
-VOLUME /opt/sap/scc/config
-VOLUME /opt/sap/scc/scc_config
 VOLUME /opt/sap/scc/log
 
 # lsof needed by cloudconnector

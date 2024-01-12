@@ -66,6 +66,32 @@ sudo docker run -d --name "cloudconnector" -p 8443:8443/tcp "andreasferdinand/cl
     * Username: `Administrator`
     * Password: `manage`
 
+> [!IMPORTANT]  
+> Only the log files are persited in a volume outside of the container. Configuration, certificates, etc. are not persisted on the host computer! To save the configuration use the backups.
+
+## Backup and restore configuration
+## Backup
+As mentioned on https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/backup backups can be created using the configuration API. To export the configuration used in the container, the following command needs to be executed on the host computer:
+
+```bash
+curl -k --fail -u Administrator https://localhost:8443/api/v1/configuration/backup -X POST -H 'Content-Type: application/json' -d "{\"password\":\"<PASSWORD>\"}" -o CloudConnectorBackup_$(date -I).zip
+```
+
+Some files inside the backup file are encrypted. Replace the token `<PASSWORD>` to set a suitable password. Since the API requires authentication, you will be asked for the password of your `Administrator` user.
+
+## Restore
+
+> [!IMPORTANT]  
+> A backup cannot be restored on a clean installation. In order to import it, you first have to log on and set a new password for the `Administrator` user.
+
+To restore the backup use the follwoing command.
+
+```bash
+curl -k --fail -u Administrator https://localhost:8444/api/v1/configuration/backup -X PUT -F 'password=<PASSWORD>' -F backup=@<BACKUPFILE>
+```
+
+The `<PASSWORD>` token needs to be replaces with the password used during creation of the backup, where as `<BACKUPFILE>` must be replaced with the name of the backup file. Again, the API requires the passoword for the `Administrator`-user, which is requested at command invocation.
+
 ## Some additional things
 
 ### Open shell in container
@@ -90,6 +116,10 @@ To view orphaned volumes use:
 ```bash
 sudo docker volume ls -f "dangling=true"
 ```
+
+## FAQ
+### Why isn't the configuration persisted in a volume outside of the container?
+When a backup is restored, the configuration files will be deleted. If the directories are mounted outside the container they cannot be deleted and therefor backup restoration doesn't work.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
